@@ -1,0 +1,19 @@
+# macOS/Swift gitignore
+.DS_Store
+build/
+DerivedData/
+*.swp
+*.lock
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+xcuserdata/
+
+# Swift Package Manager
+.build/
+.swiftpm/
+
+# Project-specific
+*.pyc
+__pycache__/
+.env
