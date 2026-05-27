@@ -64,22 +64,6 @@ struct SettingsView: View {
 
                 Divider().padding(.leading, 20)
 
-                SettingsRow("Report an issue",
-                            description: "Copies a diagnostic report to your clipboard so you can paste it into the contact form. Transcript content is never logged.") {
-                    Button("Report") { copyDiagnosticReport() }
-                        .buttonStyle(.bordered)
-                }
-
-                Divider().padding(.leading, 20)
-
-                SettingsRow("Diagnostic log",
-                            description: "Open the local log file. Useful when reporting a bug.") {
-                    Button("Open") { openLog() }
-                        .buttonStyle(.bordered)
-                }
-
-                Divider().padding(.leading, 20)
-
                 SettingsRow("Version", description: versionString)
             }
         }
@@ -174,16 +158,6 @@ struct SettingsView: View {
         accessibilityGranted = AXIsProcessTrusted()
     }
 
-    private func copyDiagnosticReport() {
-        let report = "VoiceDrop Diagnostic\nVersion: \(versionString)\nMic: \(micGranted)\nAccessibility: \(accessibilityGranted)"
-        NSPasteboard.general.clearContents()
-        NSPasteboard.general.setString(report, forType: .string)
-    }
-
-    private func openLog() {
-        guard let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else { return }
-        NSWorkspace.shared.open(base.appendingPathComponent("VoiceDrop"))
-    }
 }
 
 // MARK: - Shared row layout
