@@ -32,7 +32,6 @@ struct RecordingHUDView: View {
     private var timerLabel: some View {
         Text(String(format: "%.1fs", max(0, state.elapsedTime)))
             .font(.system(.body, design: .monospaced))
-            .monospacedDigit()
             .foregroundStyle(.primary)
     }
 }

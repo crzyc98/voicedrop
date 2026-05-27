@@ -9,8 +9,7 @@ final class HotkeyManager {
     private var keyUpMonitor: Any?
     private var isRecording = false
 
-    // kVK_ISO_Section (0x0A = 10): § on ISO/UK keyboards, same physical position as ` on ANSI/US (kVK_ANSI_Grave = 0x32 = 50)
-    var hotKeyCode: UInt16 = 10
+    var hotKeyCode: UInt16 = 50  // kVK_ANSI_Grave — set from AppSettings on launch
 
     func start() {
         keyDownMonitor = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { [weak self] event in

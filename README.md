@@ -19,4 +19,9 @@ VoiceDrop is a lightweight macOS menu bar app for push-to-talk dictation. Hold a
 - **SweetPad: Build & Run** → target `macOS arm64 Debug`
 - Distribution: direct DMG (no App Store)
 
+> **Before building:** open `voicedrop.xcodeproj/project.pbxproj` and replace `KR953WG4K5` with your own Apple Developer Team ID. You can find yours at [developer.apple.com/account](https://developer.apple.com/account) under Membership. Also update `PRODUCT_BUNDLE_IDENTIFIER` (`crzyc.voicedrop`) to your own reverse-domain identifier.
+
+## License
+MIT — see [LICENSE](LICENSE).
+
 See [VoiceDrop_PRD.md](VoiceDrop_PRD.md) for full product requirements.
