@@ -20,3 +20,5 @@ buildServer.json
 *.pyc
 __pycache__/
 .env
+scripts/paster
+VoiceDrop_PRD.md
