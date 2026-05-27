@@ -21,7 +21,7 @@ final class SettingsWindowController {
         w.title = "Settings"
         w.isReleasedWhenClosed = false
         w.center()
-        w.contentView = NSHostingView(rootView: SettingsView(settings: AppSettings.shared))
+        w.contentView = NSHostingView(rootView: SettingsView(settings: AppSettings.shared, parakeet: ParakeetManager.shared))
         return w
     }
 }

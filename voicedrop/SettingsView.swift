@@ -4,6 +4,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @Bindable var settings: AppSettings
+    var parakeet: ParakeetManager
 
     @State private var micGranted = AVCaptureDevice.authorizationStatus(for: .audio) == .authorized
     @State private var accessibilityGranted = AXIsProcessTrusted()
@@ -51,6 +52,18 @@ struct SettingsView: View {
 
                 Divider().padding(.leading, 20)
 
+                SettingsRow("Speech model", description: modelDescription) {
+                    modelStatusBadge
+                }
+
+                Divider().padding(.leading, 20)
+
+                SettingsRow("Model update", description: updateCheckDescription) {
+                    updateCheckAction
+                }
+
+                Divider().padding(.leading, 20)
+
                 SettingsRow("Report an issue",
                             description: "Copies a diagnostic report to your clipboard so you can paste it into the contact form. Transcript content is never logged.") {
                     Button("Report") { copyDiagnosticReport() }
@@ -73,6 +86,84 @@ struct SettingsView: View {
         .frame(width: 380)
         .onAppear { refresh() }
     }
+
+    // MARK: - Model rows
+
+    private var modelDescription: String {
+        switch settings.transcriptionEngine {
+        case .appleSpeech:
+            return "Apple Speech — built into macOS, no download needed."
+        case .parakeet:
+            switch parakeet.state {
+            case .ready:
+                return "Parakeet TDT \(ParakeetManager.compiledModelVersion.uppercased()) — ready."
+            case .downloading:
+                return "Parakeet TDT \(ParakeetManager.compiledModelVersion.uppercased()) — downloading (\(Int(parakeet.progress * 100))%)…"
+            case .loading:
+                return "Parakeet TDT \(ParakeetManager.compiledModelVersion.uppercased()) — loading…"
+            case .failed(let msg):
+                return "Parakeet TDT \(ParakeetManager.compiledModelVersion.uppercased()) — failed: \(msg)"
+            case .notReady:
+                return parakeet.isModelDownloaded
+                    ? "Parakeet TDT \(ParakeetManager.compiledModelVersion.uppercased()) — cached, not yet loaded."
+                    : "Parakeet TDT \(ParakeetManager.compiledModelVersion.uppercased()) — not downloaded."
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var modelStatusBadge: some View {
+        if settings.transcriptionEngine == .parakeet {
+            if parakeet.state == .ready {
+                Text("Ready")
+                    .foregroundStyle(.green)
+            } else if case .failed = parakeet.state {
+                Text("Error")
+                    .foregroundStyle(.red)
+            }
+        }
+    }
+
+    private var updateCheckDescription: String {
+        switch parakeet.updateCheckState {
+        case .idle:
+            return "Check if a newer speech model is available."
+        case .checking:
+            return "Checking for updates…"
+        case .upToDate:
+            return "You have the latest model (Parakeet TDT \(ParakeetManager.compiledModelVersion.uppercased()))."
+        case .available(let tag):
+            return "Speech engine \(tag) is available. Download the latest VoiceDrop to upgrade."
+        case .failed:
+            return "Update check failed. Try again later."
+        }
+    }
+
+    @ViewBuilder
+    private var updateCheckAction: some View {
+        if parakeet.updateCheckState == .checking {
+            ProgressView().controlSize(.small)
+        } else if case .available = parakeet.updateCheckState {
+            HStack(spacing: 6) {
+                Button("Get") {
+                    NSWorkspace.shared.open(
+                        URL(string: "https://github.com/crzyc98/voicedrop/releases")!)
+                }
+                .buttonStyle(.bordered)
+                Button("Check") {
+                    Task { await parakeet.checkForUpdates() }
+                }
+                .buttonStyle(.bordered)
+            }
+        } else {
+            Button("Check") {
+                Task { await parakeet.checkForUpdates() }
+            }
+            .buttonStyle(.bordered)
+        }
+    }
+
+    // MARK: - Helpers
 
     private var versionString: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "—"
