@@ -13,6 +13,9 @@ xcuserdata/
 .build/
 .swiftpm/
 
+# IDE / SweetPad (machine-local, contains absolute paths)
+buildServer.json
+
 # Project-specific
 *.pyc
 __pycache__/
